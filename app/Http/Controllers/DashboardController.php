@@ -33,7 +33,7 @@ class DashboardController extends Controller
         $grandTotal = $totalOpen + $totalSubmitted + $totalRejected;
         $totalPersentase = $grandTotal > 0 ? round(($totalSubmitted / $grandTotal) * 100, 2) : 0;
 
-        $lastUpdate = HasilGc::max('updated_at');
+        $lastUpdate = HasilGc::latest('updated_at')->first()?->updated_at;
 
         return view('dashboard', compact('petugases', 'totalOpen', 'totalSubmitted', 'totalRejected', 'totalPersentase', 'lastUpdate'));
     }
