@@ -534,10 +534,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
-                            @php
-                                $sortedPetugases = $petugases->sortBy('nama');
-                            @endphp
-                            @forelse($sortedPetugases as $index => $petugas)
+                            @forelse($petugases as $index => $petugas)
                                 <tr class="hover:bg-slate-50/80 transition-all duration-150 group">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center gap-3">
@@ -877,10 +874,11 @@
                     });
                 });
 
-                // Trigger sort on nama column by default (ascending)
+                // Set indikator ascending pada kolom nama tanpa trigger sorting ulang
                 const namaHeader = table.querySelector('th.sort-header[data-sort-default]');
                 if (namaHeader) {
-                    namaHeader.click();
+                    namaHeader.setAttribute('aria-sort', 'ascending');
+                    namaHeader.classList.add('sort-up');
                 }
             }
 
@@ -904,10 +902,10 @@
                 type: 'doughnut',
                 data: {
                     labels: [
-            `Open: ${totalOpen.toLocaleString()}`,
-            `Submitted: ${totalSubmitted.toLocaleString()}`,
-            `Rejected: ${totalRejected.toLocaleString()}`
-        ],
+                        `Open: ${totalOpen.toLocaleString()}`,
+                        `Submitted: ${totalSubmitted.toLocaleString()}`,
+                        `Rejected: ${totalRejected.toLocaleString()}`
+                    ],
                     datasets: [{
                         data: [totalOpen, totalSubmitted, totalRejected],
                         backgroundColor: ['#94a3b8', '#3b82f6', '#f43f5e'],
@@ -951,11 +949,11 @@
                 type: 'doughnut',
                 data: {
                     labels: [
-            `Berhasil: ${totalBerhasil.toLocaleString()}`,
-            `Kosong: ${totalKosong.toLocaleString()}`,
-            `Menolak: ${totalMenolak.toLocaleString()}`,
-            `Meteran Tidak Ditemukan: ${totalNoMeter.toLocaleString()}`
-        ],
+                        `Berhasil: ${totalBerhasil.toLocaleString()}`,
+                        `Kosong: ${totalKosong.toLocaleString()}`,
+                        `Menolak: ${totalMenolak.toLocaleString()}`,
+                        `Meteran Tidak Ditemukan: ${totalNoMeter.toLocaleString()}`
+                    ],
                     datasets: [{
                         data: [totalBerhasil, totalKosong, totalMenolak, totalNoMeter],
                         backgroundColor: ['#10b981', '#f59e0b', '#f43f5e', '#f97316'],

@@ -12,20 +12,24 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $petugases = Petugas::with(['rbms.hasilGc'])->get()->map(function($petugas) {
-            $open = $petugas->rbms->sum(fn($rbm) => $rbm->hasilGc->open ?? 0);
-            $submitted = $petugas->rbms->sum(fn($rbm) => $rbm->hasilGc->submitted ?? 0);
-            $rejected = $petugas->rbms->sum(fn($rbm) => $rbm->hasilGc->rejected ?? 0);
-            $total = $open + $submitted + $rejected;
-            $persentase = $total > 0 ? round(($submitted / $total) * 100, 2) : 0;
-            
-            $petugas->total_open = $open;
-            $petugas->total_submitted = $submitted;
-            $petugas->total_rejected = $rejected;
-            $petugas->persentase = $persentase;
-            
-            return $petugas;
-        });
+        $petugases = Petugas::with(['rbms.hasilGc'])
+            ->get()
+            ->map(function($petugas) {
+                $open = $petugas->rbms->sum(fn($rbm) => $rbm->hasilGc->open ?? 0);
+                $submitted = $petugas->rbms->sum(fn($rbm) => $rbm->hasilGc->submitted ?? 0);
+                $rejected = $petugas->rbms->sum(fn($rbm) => $rbm->hasilGc->rejected ?? 0);
+                $total = $open + $submitted + $rejected;
+                $persentase = $total > 0 ? round(($submitted / $total) * 100, 2) : 0;
+                
+                $petugas->total_open = $open;
+                $petugas->total_submitted = $submitted;
+                $petugas->total_rejected = $rejected;
+                $petugas->persentase = $persentase;
+                
+                return $petugas;
+            })
+            ->sortBy('nama') // Tambahkan ini untuk mengurutkan ascending berdasarkan nama
+            ->values(); // Reset index array
 
         $totalOpen = $petugases->sum('total_open');
         $totalSubmitted = $petugases->sum('total_submitted');
