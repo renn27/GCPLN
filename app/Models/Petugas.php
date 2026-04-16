@@ -12,4 +12,18 @@ class Petugas extends Model
     {
         return $this->hasMany(Rbm::class);
     }
+    
+    // UPDATE RELASI - Gunakan kondisi untuk case-insensitive
+    public function keterangan()
+    {
+        return $this->hasOne(Keterangan::class, 'email_biller', 'email')
+                    ->whereRaw('LOWER(email_biller) = LOWER(?)', [$this->email]);
+    }
+    
+    // TAMBAHKAN ACCESSOR UNTUK MENDAPATKAN DATA KETERANGAN
+    public function getKeteranganDataAttribute()
+    {
+        // Cari keterangan berdasarkan email (case-insensitive)
+        return Keterangan::whereRaw('LOWER(email_biller) = ?', [strtolower($this->email)])->first();
+    }
 }

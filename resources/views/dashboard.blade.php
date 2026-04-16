@@ -501,93 +501,116 @@
             </div>
 
             <!-- Data Table - Clean and modern -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden hover-lift">
-                <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                    <div class="flex items-center gap-2">
-                        <div class="w-1 h-5 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
-                        <h2 class="text-base font-semibold text-slate-800">Rekapitulasi per Petugas</h2>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table id="rekapTable" class="min-w-full divide-y divide-slate-100">
-                        <thead>
-                            <tr class="bg-slate-50/80">
-                                <th scope="col"
-                                    class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
-                                    data-sort-default>
-                                    <span class="flex items-center gap-1">
-                                        Nama Petugas
-                                    </span>
-                                </th>
-                                <th scope="col"
-                                    class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                    Open</th>
-                                <th scope="col"
-                                    class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                    Submitted</th>
-                                <th scope="col"
-                                    class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                    Rejected</th>
-                                <th scope="col"
-                                    class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                    Persentase</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            @forelse($petugases as $index => $petugas)
-                                <tr class="hover:bg-slate-50/80 transition-all duration-150 group">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center gap-3">
-                                            <div
-                                                class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-blue-600 font-medium text-sm group-hover:scale-105 transition-transform">
-                                                {{ strtoupper(substr($petugas->nama, 0, 1)) }}
-                                            </div>
-                                            <span
-                                                class="text-sm font-medium text-slate-800">{{ $petugas->nama }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">
-                                        {{ number_format($petugas->total_open) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-semibold">
-                                        {{ number_format($petugas->total_submitted) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-rose-500 font-medium">
-                                        {{ number_format($petugas->total_rejected) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        @php
-                                            $colorClass =
-                                                $petugas->persentase >= 80
-                                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                                    : ($petugas->persentase >= 50
-                                                        ? 'bg-amber-50 text-amber-700 border-amber-200'
-                                                        : 'bg-rose-50 text-rose-700 border-rose-200');
-                                        @endphp
-                                        <span
-                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border {{ $colorClass }}">
-                                            {{ $petugas->persentase }}%
-                                        </span>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="px-6 py-16 text-center">
-                                        <div class="flex flex-col items-center justify-center text-slate-400">
-                                            <svg class="w-12 h-12 mb-3 text-slate-300" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    stroke-width="1.5"
-                                                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                                            </svg>
-                                            <p class="text-sm font-medium">Belum ada data</p>
-                                            <p class="text-xs mt-1">Silakan import Petugas dan Hasil GC untuk memulai
-                                            </p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <!-- Data Table - Clean and modern -->
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden hover-lift">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div class="flex items-center gap-2">
+            <div class="w-1 h-5 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
+            <h2 class="text-base font-semibold text-slate-800">Rekapitulasi per Petugas</h2>
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table id="rekapTable" class="min-w-full divide-y divide-slate-100">
+            <thead>
+                <tr class="bg-slate-50/80">
+                    <th scope="col"
+                        class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                        data-sort-default>
+                        <span class="flex items-center gap-1">Nama Petugas</span>
+                    </th>
+                    <th scope="col"
+                        class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        Open</th>
+                    <th scope="col"
+                        class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        Submitted</th>
+                    <th scope="col"
+                        class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        Rejected</th>
+                    <th scope="col"
+                        class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        % GC</th>
+                    <!-- TAMBAHKAN 4 KOLOM KETERANGAN -->
+                    <th scope="col"
+                        class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-emerald-600 uppercase tracking-wider">
+                        Berhasil</th>
+                    <th scope="col"
+                        class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                        Kosong</th>
+                    <th scope="col"
+                        class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-rose-600 uppercase tracking-wider">
+                        Menolak</th>
+                    <th scope="col"
+                        class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-orange-600 uppercase tracking-wider">
+                        No Meter</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                @forelse($petugases as $index => $petugas)
+                    <tr class="hover:bg-slate-50/80 transition-all duration-150 group">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-blue-600 font-medium text-sm group-hover:scale-105 transition-transform">
+                                    {{ strtoupper(substr($petugas->nama, 0, 1)) }}
+                                </div>
+                                <span class="text-sm font-medium text-slate-800">{{ $petugas->nama }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">
+                            {{ number_format($petugas->total_open) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-semibold">
+                            {{ number_format($petugas->total_submitted) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-rose-500 font-medium">
+                            {{ number_format($petugas->total_rejected) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            @php
+                                $colorClass =
+                                    $petugas->persentase >= 80
+                                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                        : ($petugas->persentase >= 50
+                                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                            : 'bg-rose-50 text-rose-700 border-rose-200');
+                            @endphp
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border {{ $colorClass }}">
+                                {{ $petugas->persentase }}%
+                            </span>
+                        </td>
+                        <!-- TAMBAHKAN 4 KOLOM DATA KETERANGAN -->
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-emerald-600 font-medium">
+                            {{ number_format($petugas->berhasil_didata) }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-amber-600 font-medium">
+                            {{ number_format($petugas->tidak_ada_responden) }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-rose-500 font-medium">
+                            {{ number_format($petugas->responden_menolak) }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-orange-500 font-medium">
+                            {{ number_format($petugas->meteran_tidak_ditemukan) }}
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="9" class="px-6 py-16 text-center">
+                            <div class="flex flex-col items-center justify-center text-slate-400">
+                                <svg class="w-12 h-12 mb-3 text-slate-300" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="1.5"
+                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                </svg>
+                                <p class="text-sm font-medium">Belum ada data</p>
+                                <p class="text-xs mt-1">Silakan import Petugas dan Hasil GC untuk memulai</p>
+                            </div>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
         </main>
 
         <!-- Footer -->

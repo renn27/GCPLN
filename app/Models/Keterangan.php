@@ -10,6 +10,7 @@ class Keterangan extends Model
         'unitupi',
         'unitap',
         'unitup',
+        'email_biller',  // TAMBAHKAN INI
         'berhasil_didata',
         'tidak_ada_responden',
         'responden_menolak',
@@ -17,4 +18,10 @@ class Keterangan extends Model
     ];
 
     protected $table = 'keterangan';
+    
+    // TAMBAHKAN RELASI KE PETUGAS
+    public function petugas()
+    {
+        return $this->belongsTo(Petugas::class, 'email_biller', 'email');
+    }
 }

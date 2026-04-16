@@ -13,28 +13,24 @@ class PetugasImport implements ToCollection, WithHeadingRow
 {
     public function collection(Collection $rows)
     {
-        if ($rows->isEmpty()) {
-            throw new \Exception('File Excel terlihat kosong.');
-        }
-
-        $firstRow = $rows->first();
-        if (!isset($firstRow['rbm']) || !isset($firstRow['email'])) {
-            throw new \Exception('Kolom wajib (RBM, Email) tidak ditemukan di file. Pastikan format kolom baris pertama sesuai dengan contoh.');
-        }
-
         DB::transaction(function () use ($rows) {
             foreach ($rows as $row) {
-                if (!isset($row['rbm']) || !isset($row['email'])) {
+                if (empty($row['rbm']) || empty($row['nama_petugas'])) {
                     continue;
                 }
 
+                // BERSIHKAN EMAIL: lowercase dan trim
+                $email = strtolower(trim($row['email'] ?? ''));
+
+                // Cari atau buat petugas
                 $petugas = Petugas::firstOrCreate(
-                    ['email' => $row['email']],
-                    ['nama' => $row['nama_petugas'] ?? ($row['nama'] ?? $row['email'])]
+                    ['email' => $email],
+                    ['nama' => trim($row['nama_petugas'])]
                 );
 
-                Rbm::updateOrCreate(
-                    ['kode_rbm' => $row['rbm']],
+                // Buat RBM
+                Rbm::firstOrCreate(
+                    ['kode_rbm' => trim($row['rbm'])],
                     ['petugas_id' => $petugas->id]
                 );
             }
