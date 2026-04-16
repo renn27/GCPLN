@@ -16,7 +16,7 @@ class ImportPetugasController extends Controller
             'file_petugas' => 'required|mimes:xlsx,xls,csv'
         ]);
 
-        if ($request->password !== 'petugaspln2708') {
+        if ($request->password !== 'gcpln2026') {
             return redirect()->back()->withErrors(['password' => 'Password import petugas salah.']);
         }
 

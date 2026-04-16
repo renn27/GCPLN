@@ -71,12 +71,18 @@ th.sort-header.sort-down::after {
     font-size: 14px;
     font-weight: 500;
 }
+
     </style>
 </head>
 <body class="bg-slate-50/50 text-slate-700 font-sans antialiased">
 
-<div class="min-h-screen flex flex-col" x-data="{ showImportPetugas: false, showImportGc: false }">
-    <!-- Navbar - Glassmorphism style -->
+<div class="min-h-screen flex flex-col" x-data="{ 
+    showImportPetugas: false, 
+    showImportGc: false, 
+    showImportKeterangan: false,
+    dropdownOpen: false,
+    dropdownTimeout: null
+}">    <!-- Navbar - Glassmorphism style -->
     <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-20 border-b border-slate-200/60 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
@@ -118,14 +124,34 @@ th.sort-header.sort-down::after {
                 </div>
             </div>
             <div class="flex flex-wrap gap-2.5">
-                <button @click="showImportPetugas = true" class="group px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl shadow-sm text-sm font-medium hover:bg-slate-50 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    <span>Import Petugas</span>
-                </button>
-                <button @click="showImportGc = true" class="group px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl shadow-sm text-sm font-medium hover:bg-slate-50 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                    <span>Import GC</span>
-                </button>
+                <!-- Dropdown Import - Semua import dalam satu dropdown -->
+               <div class="relative" @mouseenter="clearTimeout(dropdownTimeout); dropdownOpen = true" @mouseleave="dropdownTimeout = setTimeout(() => dropdownOpen = false, 200)">
+    <button class="group px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl shadow-sm text-sm font-medium hover:bg-slate-50 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 flex items-center gap-2">
+        <svg class="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        <span>Import</span>
+        <svg class="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+    <div x-show="dropdownOpen" 
+         x-transition.opacity.duration.200
+         @mouseenter="clearTimeout(dropdownTimeout); dropdownOpen = true" 
+         @mouseleave="dropdownTimeout = setTimeout(() => dropdownOpen = false, 200)"
+         class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-slate-200 py-1 z-30"
+         style="display: none;">
+        <button @click="showImportPetugas = true; dropdownOpen = false" class="w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>Import Petugas</span>
+        </button>
+        <button @click="showImportGc = true; dropdownOpen = false" class="w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            <span>Import Data GC</span>
+        </button>
+        <button @click="showImportKeterangan = true; dropdownOpen = false" class="w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span>Import Keterangan</span>
+        </button>
+    </div>
+</div>
+                
                 <a href="{{ route('export.rekap') }}" class="group px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-green-600 border border-transparent text-white rounded-xl shadow-md shadow-green-200 text-sm font-medium hover:from-emerald-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 flex items-center gap-2">
                     <svg class="w-4 h-4 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     <span>Export Excel</span>
@@ -165,7 +191,7 @@ th.sort-header.sort-down::after {
             </div>
         @endif
 
-        <!-- Summary Cards - Redesigned with icons and better visual hierarchy -->
+        <!-- Summary Cards GC -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
             <!-- Total Open -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 hover-lift group">
@@ -218,7 +244,7 @@ th.sort-header.sort-down::after {
                 </p>
             </div>
             
-            <!-- Persentase -->
+            <!-- Persentase GC -->
             <div class="bg-gradient-to-br from-emerald-50 to-white rounded-2xl shadow-sm border border-emerald-200/80 p-5 hover-lift group">
                 <div class="flex items-start justify-between">
                     <div>
@@ -236,17 +262,123 @@ th.sort-header.sort-down::after {
             </div>
         </div>
 
-        <!-- Charts Section - Better spacing and containers -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
+        <!-- Summary Cards Keterangan -->
+        <div class="mb-8">
+            <div class="flex items-center gap-2 mb-4">
+                <div class="w-1 h-5 bg-gradient-to-b from-purple-500 to-purple-600 rounded-full"></div>
+                <h2 class="text-base font-semibold text-slate-800">Rekap Keterangan Survey</h2>
+                <span class="ml-auto text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">Detail Status</span>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+                <!-- Berhasil Didata -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 hover-lift group">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Berhasil</p>
+                            <p class="text-3xl font-bold text-emerald-600 tracking-tight">{{ number_format($totalBerhasilDidata) }}</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-100 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        Berhasil didata
+                    </p>
+                </div>
+                
+                <!-- Tidak Ada Responden -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 hover-lift group">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Kosong</p>
+                            <p class="text-3xl font-bold text-amber-500 tracking-tight">{{ number_format($totalTidakAdaResponden) }}</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 group-hover:bg-amber-100 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        Rumah kosong
+                    </p>
+                </div>
+                
+                <!-- Responden Menolak -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 hover-lift group">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Menolak</p>
+                            <p class="text-3xl font-bold text-rose-500 tracking-tight">{{ number_format($totalRespondenMenolak) }}</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-500 group-hover:bg-rose-100 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                        Responden menolak
+                    </p>
+                </div>
+                
+                <!-- Meteran Tidak Ditemukan -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 hover-lift group">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">No Meter</p>
+                            <p class="text-3xl font-bold text-orange-500 tracking-tight">{{ number_format($totalMeteranTidakDitemukan) }}</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500 group-hover:bg-orange-100 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                        Meteran tidak ditemukan
+                    </p>
+                </div>
+                
+                <!-- Persentase Berhasil -->
+                <div class="bg-gradient-to-br from-purple-50 to-white rounded-2xl shadow-sm border border-purple-200/80 p-5 hover-lift group">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-purple-600/70 uppercase tracking-wider mb-1">% Berhasil</p>
+                            <p class="text-3xl font-bold text-purple-700 tracking-tight">{{ $persentaseBerhasil }}%</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-700 group-hover:bg-purple-200 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        </div>
+                    </div>
+                    <div class="mt-2 w-full bg-purple-100 rounded-full h-1.5">
+                        <div class="bg-purple-500 h-1.5 rounded-full transition-all duration-500" style="width: {{ min($persentaseBerhasil, 100) }}%"></div>
+                    </div>
+                    <p class="text-xs text-purple-600/70 mt-2">Tingkat keberhasilan survey</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section - 3 Charts dalam 1 Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
             <!-- Overall Status Donut Chart -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 hover-lift">
                 <div class="flex items-center gap-2 mb-4">
                     <div class="w-1 h-5 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
-                    <h2 class="text-base font-semibold text-slate-800">Distribusi Status</h2>
-                    <span class="ml-auto text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">Overall</span>
+                    <h2 class="text-base font-semibold text-slate-800">Distribusi Status GC</h2>
                 </div>
                 <div class="relative h-64 w-full">
                     <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Distribusi Keterangan Donut Chart -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 hover-lift">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-1 h-5 bg-gradient-to-b from-purple-500 to-purple-600 rounded-full"></div>
+                    <h2 class="text-base font-semibold text-slate-800">Distribusi Keterangan</h2>
+                </div>
+                <div class="relative h-64 w-full">
+                    <canvas id="keteranganChart"></canvas>
                 </div>
             </div>
             
@@ -255,7 +387,6 @@ th.sort-header.sort-down::after {
                 <div class="flex items-center gap-2 mb-4">
                     <div class="w-1 h-5 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full"></div>
                     <h2 class="text-base font-semibold text-slate-800">Top 5 Petugas</h2>
-                    <span class="ml-auto text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">Submitted Terbanyak</span>
                 </div>
                 <div class="relative h-64 w-full">
                     <canvas id="petugasChart"></canvas>
@@ -275,7 +406,7 @@ th.sort-header.sort-down::after {
                 <table id="rekapTable" class="min-w-full divide-y divide-slate-100">
                     <thead>
     <tr class="bg-slate-50/80">
-        <th scope="col" class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+        <th scope="col" class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider" data-sort-default>
             <span class="flex items-center gap-1">
                 Nama Petugas
             </span>
@@ -287,7 +418,10 @@ th.sort-header.sort-down::after {
     </tr>
 </thead>
                     <tbody class="divide-y divide-slate-100">
-                        @forelse($petugases as $index => $petugas)
+                        @php
+                            $sortedPetugases = $petugases->sortBy('nama');
+                        @endphp
+                        @forelse($sortedPetugases as $index => $petugas)
                             <tr class="hover:bg-slate-50/80 transition-all duration-150 group">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-3">
@@ -329,11 +463,11 @@ th.sort-header.sort-down::after {
     <!-- Footer -->
     <footer class="border-t border-slate-200/60 bg-white/50 py-4 mt-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-400">
-            BPS Kabupaten Ogan Ilir • {{ date('Y') }}
+            BPS Kabupaten Ogan Ilir • {{ date('Y')  }} (v4.16)
         </div>
     </footer>
 
-    <!-- Modal Import Petugas - Redesigned -->
+    <!-- Modal Import Petugas -->
     <div x-show="showImportPetugas" class="fixed z-50 inset-0 overflow-y-auto" style="display: none;" x-transition.opacity.duration.200ms>
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div x-show="showImportPetugas" x-transition.opacity class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" aria-hidden="true" @click="showImportPetugas = false"></div>
@@ -356,7 +490,6 @@ th.sort-header.sort-down::after {
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1.5">PASSWORD IMPORT</label>
                                 <input type="password" name="password" required class="block w-full border border-slate-200 rounded-xl p-2.5 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" placeholder="Masukkan password...">
-                                <p class="text-[10px] text-slate-400 mt-1">Gunakan password yang valid</p>
                             </div>
                             
                             <div>
@@ -385,7 +518,7 @@ th.sort-header.sort-down::after {
         </div>
     </div>
 
-    <!-- Modal Import GC - Redesigned -->
+    <!-- Modal Import GC -->
     <div x-show="showImportGc" class="fixed z-50 inset-0 overflow-y-auto" style="display: none;" x-transition.opacity.duration.200ms>
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div x-show="showImportGc" x-transition.opacity class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" aria-hidden="true" @click="showImportGc = false"></div>
@@ -415,7 +548,6 @@ th.sort-header.sort-down::after {
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1.5">PASSWORD IMPORT</label>
                                 <input type="password" name="password" required class="block w-full border border-slate-200 rounded-xl p-2.5 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all" placeholder="Masukkan password...">
-                                <p class="text-[10px] text-slate-400 mt-1">Gunakan password yang valid</p>
                             </div>
 
                             <div>
@@ -436,6 +568,64 @@ th.sort-header.sort-down::after {
                             Import & Ganti
                         </button>
                         <button type="button" @click="showImportGc = false" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50 transition-colors">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Import Keterangan -->
+    <div x-show="showImportKeterangan" class="fixed z-50 inset-0 overflow-y-auto" style="display: none;" x-transition.opacity.duration.200ms>
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="showImportKeterangan" x-transition.opacity class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" aria-hidden="true" @click="showImportKeterangan = false"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div x-show="showImportKeterangan" x-transition.scale.origin.top.duration.200ms class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-slate-100">
+                <form action="{{ route('import.keterangan') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="bg-white px-5 pt-5 pb-4 sm:p-6">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-slate-800">Import Data Keterangan</h3>
+                                <p class="text-xs text-slate-500">Upload file Excel keterangan survey</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="bg-purple-50/50 border border-purple-200 rounded-xl p-3.5">
+                                <p class="text-xs text-purple-700 flex items-start gap-2">
+                                    <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span><strong class="font-semibold">Informasi:</strong> Data keterangan yang sudah ada akan dihapus dan diganti dengan data baru dari file ini.</span>
+                                </p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">PASSWORD IMPORT</label>
+                                <input type="password" name="password" required class="block w-full border border-slate-200 rounded-xl p-2.5 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all" placeholder="Masukkan password...">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">FILE EXCEL KETERANGAN</label>
+                                <div class="relative">
+                                    <input type="file" name="file_keterangan" required class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 border border-slate-200 rounded-xl p-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500">
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1.5 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    Kolom: UNITUPI, UNITAP, UNITUP, 1. Berhasil didata, 2. Tidak ada responden..., 3. Responden menolak, 4. Meteran tidak ditemukan
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50/80 px-5 py-4 sm:px-6 flex flex-row-reverse gap-2 border-t border-slate-200">
+                        <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-purple-500 text-white rounded-xl text-sm font-medium hover:from-purple-700 hover:to-purple-600 shadow-md shadow-purple-200 transition-all flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                            Import & Ganti
+                        </button>
+                        <button type="button" @click="showImportKeterangan = false" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50 transition-colors">
                             Batal
                         </button>
                     </div>
@@ -473,6 +663,12 @@ th.sort-header.sort-down::after {
                 }, 10);
             });
         });
+        
+        // Trigger sort on nama column by default (ascending)
+        const namaHeader = table.querySelector('th.sort-header[data-sort-default]');
+        if (namaHeader) {
+            namaHeader.click();
+        }
     }
 
         // Charts configuration
@@ -480,10 +676,16 @@ th.sort-header.sort-down::after {
         const totalSubmitted = {{ $totalSubmitted }};
         const totalRejected = {{ $totalRejected }};
         
+        // Keterangan data
+        const totalBerhasil = {{ $totalBerhasilDidata }};
+        const totalKosong = {{ $totalTidakAdaResponden }};
+        const totalMenolak = {{ $totalRespondenMenolak }};
+        const totalNoMeter = {{ $totalMeteranTidakDitemukan }};
+        
         // Pass complete data securely to Javascript
         const rawPetugases = @json($petugases);
         
-        // Donut Chart - with improved styling
+        // Donut Chart - Distribusi Status GC
         const ctxStatus = document.getElementById('statusChart').getContext('2d');
         new Chart(ctxStatus, {
             type: 'doughnut',
@@ -508,8 +710,8 @@ th.sort-header.sort-down::after {
                             usePointStyle: true,
                             boxWidth: 8,
                             boxHeight: 8,
-                            padding: 16,
-                            font: { size: 12, family: 'Inter' }
+                            padding: 12,
+                            font: { size: 11, family: 'Inter' }
                         }
                     },
                     tooltip: {
@@ -523,7 +725,47 @@ th.sort-header.sort-down::after {
             }
         });
 
-        // Bar Chart Data Prep
+        // Donut Chart - Distribusi Keterangan
+        const ctxKeterangan = document.getElementById('keteranganChart').getContext('2d');
+        new Chart(ctxKeterangan, {
+            type: 'doughnut',
+            data: {
+                labels: ['Berhasil Didata', 'Rumah Kosong', 'Menolak', 'No Meter'],
+                datasets: [{
+                    data: [totalBerhasil, totalKosong, totalMenolak, totalNoMeter],
+                    backgroundColor: ['#10b981', '#f59e0b', '#f43f5e', '#f97316'],
+                    borderWidth: 0,
+                    borderRadius: 6,
+                    spacing: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: { 
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8,
+                            boxHeight: 8,
+                            padding: 12,
+                            font: { size: 11, family: 'Inter' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleColor: '#f1f5f9',
+                        bodyColor: '#cbd5e1',
+                        padding: 12,
+                        cornerRadius: 8,
+                    }
+                }
+            }
+        });
+
+        // Bar Chart Data Prep - Top 5 Petugas
         const top5 = rawPetugases
             .sort((a,b) => b.total_submitted - a.total_submitted)
             .slice(0, 5);
@@ -532,7 +774,7 @@ th.sort-header.sort-down::after {
         new Chart(ctxPetugas, {
             type: 'bar',
             data: {
-                labels: top5.map(p => p.nama),
+                labels: top5.map(p => p.nama.length > 15 ? p.nama.substring(0, 12) + '...' : p.nama),
                 datasets: [{
                     label: 'Total Submitted',
                     data: top5.map(p => p.total_submitted),
@@ -549,11 +791,11 @@ th.sort-header.sort-down::after {
                     y: { 
                         beginAtZero: true,
                         grid: { color: '#e2e8f0', drawBorder: false },
-                        ticks: { stepSize: 1, font: { size: 11 } }
+                        ticks: { stepSize: 1, font: { size: 10 } }
                     },
                     x: {
                         grid: { display: false },
-                        ticks: { font: { size: 11 }, maxRotation: 25 }
+                        ticks: { font: { size: 10 }, maxRotation: 25 }
                     }
                 },
                 plugins: {
