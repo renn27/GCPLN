@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Keterangan extends Model
 {
     protected $fillable = [
+        'jenis_layanan',
         'unitupi',
         'unitap',
         'unitup',

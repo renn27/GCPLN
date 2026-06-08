@@ -9,10 +9,18 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class RekapExport implements FromCollection, WithHeadings, WithMapping
 {
+    public function __construct(private string $jenisLayanan = 'pascabayar')
+    {
+    }
+
     public function collection()
     {
-        return Petugas::with(['rbms.hasilGc'])->get()->map(function($petugas) {
-            $open = $petugas->rbms->sum(fn($rbm) => $rbm->hasilGc->open ?? 0);
+        return Petugas::with(['rbms.hasilGc' => function ($query) {
+            $query->where('jenis_layanan', $this->jenisLayanan);
+        }])->get()->map(function($petugas) {
+            $open = $this->jenisLayanan === 'prabayar'
+                ? 0
+                : $petugas->rbms->sum(fn($rbm) => $rbm->hasilGc->open ?? 0);
             $submitted = $petugas->rbms->sum(fn($rbm) => $rbm->hasilGc->submitted ?? 0);
             $rejected = $petugas->rbms->sum(fn($rbm) => $rbm->hasilGc->rejected ?? 0);
             $total = $open + $submitted + $rejected;
@@ -29,23 +37,35 @@ class RekapExport implements FromCollection, WithHeadings, WithMapping
 
     public function map($petugas): array
     {
-        return [
+        $row = [
+            $this->jenisLayanan === 'prabayar' ? 'Prabayar' : 'Pascabayar',
             $petugas->nama,
-            $petugas->total_open,
             $petugas->total_submitted,
             $petugas->total_rejected,
             $petugas->persentase . '%'
         ];
+
+        if ($this->jenisLayanan !== 'prabayar') {
+            array_splice($row, 2, 0, [$petugas->total_open]);
+        }
+
+        return $row;
     }
 
     public function headings(): array
     {
-        return [
+        $headings = [
+            'Layanan',
             'Nama Petugas',
-            'Open',
             'Submitted',
             'Rejected',
             'Persentase'
         ];
+
+        if ($this->jenisLayanan !== 'prabayar') {
+            array_splice($headings, 2, 0, ['Open']);
+        }
+
+        return $headings;
     }
 }

@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\DB;
 
 class KeteranganImport implements ToCollection, WithHeadingRow
 {
+    public function __construct(private string $jenisLayanan = 'pascabayar')
+    {
+    }
+
     public function collection(Collection $rows)
     {
         if ($rows->isEmpty()) {
@@ -30,7 +34,7 @@ class KeteranganImport implements ToCollection, WithHeadingRow
         }
 
         DB::transaction(function () use ($rows) {
-            Keterangan::query()->delete();
+            Keterangan::where('jenis_layanan', $this->jenisLayanan)->delete();
 
             foreach ($rows as $row) {
                 if (!isset($row['unitupi'])) {
@@ -45,6 +49,7 @@ class KeteranganImport implements ToCollection, WithHeadingRow
                 $emailBiller = strtolower(trim($row['email_biller'] ?? ''));
 
                 Keterangan::create([
+                    'jenis_layanan'            => $this->jenisLayanan,
                     'unitupi'                   => $unitupi,
                     'unitap'                    => $unitap,
                     'unitup'                    => $unitup,

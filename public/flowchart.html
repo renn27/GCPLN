@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flowchart Upload Excel – GCPLN</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh;padding:40px 20px}
+  h1{text-align:center;font-size:1.6rem;font-weight:700;margin-bottom:6px;background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .subtitle{text-align:center;color:#64748b;font-size:.85rem;margin-bottom:40px}
+
+  .tabs{display:flex;justify-content:center;gap:10px;margin-bottom:36px;flex-wrap:wrap}
+  .tab{padding:8px 22px;border-radius:30px;border:1.5px solid #334155;background:transparent;color:#94a3b8;cursor:pointer;font-size:.85rem;font-family:'Inter',sans-serif;transition:.2s}
+  .tab.active,.tab:hover{background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-color:transparent;color:#fff}
+
+  .flow-wrap{display:none;max-width:860px;margin:0 auto}
+  .flow-wrap.active{display:block}
+
+  /* NODES */
+  .node{border-radius:12px;padding:14px 20px;margin:0 auto 6px;text-align:center;font-size:.84rem;position:relative;max-width:480px}
+  .node-label{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;opacity:.6;margin-bottom:3px}
+  .node-text{font-weight:600;font-size:.92rem}
+  .node-sub{font-size:.75rem;opacity:.7;margin-top:4px}
+
+  .n-start,.n-end{background:linear-gradient(135deg,#1e3a5f,#1e1b4b);border:2px solid #3b82f6;border-radius:50px;max-width:280px}
+  .n-end{border-color:#8b5cf6}
+  .n-process{background:#1e293b;border:1.5px solid #334155}
+  .n-decision{background:linear-gradient(135deg,#1c1f2e,#1e2a1e);border:1.5px solid #4ade80;transform:perspective(400px)}
+  .n-db{background:#1a1f2e;border:1.5px dashed #f59e0b}
+  .n-error{background:#1f1414;border:1.5px solid #ef4444}
+  .n-success{background:#0f1f18;border:1.5px solid #22c55e}
+
+  .arrow{text-align:center;color:#475569;font-size:1.3rem;line-height:1;margin:0 auto 6px;display:block}
+  .arrow-label{text-align:center;font-size:.7rem;color:#60a5fa;margin:-4px auto 6px;display:block}
+
+  .group{border:1px solid #1e293b;border-radius:16px;padding:16px;margin-bottom:6px;background:rgba(255,255,255,.02)}
+  .group-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:#64748b;margin-bottom:10px;font-weight:700}
+
+  .cols{display:flex;gap:12px;justify-content:center;margin-bottom:6px}
+  .cols .node{flex:1;max-width:220px;margin:0}
+
+  /* badge */
+  .badge{display:inline-block;font-size:.65rem;padding:2px 8px;border-radius:20px;margin-top:4px}
+  .badge-blue{background:#1d3557;color:#60a5fa}
+  .badge-green{background:#14532d;color:#4ade80}
+  .badge-yellow{background:#3f2c00;color:#fbbf24}
+  .badge-purple{background:#2e1065;color:#c084fc}
+  .badge-red{background:#3f0f0f;color:#f87171}
+</style>
+</head>
+<body>
+<h1>📊 Alur Data Upload Excel – GCPLN</h1>
+<p class="subtitle">Diagram alur dari upload file Excel hingga data tampil di dashboard</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('gc')">Import Hasil GC</button>
+  <button class="tab" onclick="show('petugas')">Import Petugas & RBM</button>
+  <button class="tab" onclick="show('keterangan')">Import Keterangan</button>
+  <button class="tab" onclick="show('dashboard')">Render Dashboard</button>
+</div>
+
+<!-- ===================== TAB 1: GC ===================== -->
+<div id="tab-gc" class="flow-wrap active">
+
+  <div class="node n-start">
+    <div class="node-label">Mulai</div>
+    <div class="node-text">👤 User membuka halaman Import</div>
+  </div>
+  <span class="arrow">↓</span>
+
+  <div class="node n-process">
+    <div class="node-label">Form Input</div>
+    <div class="node-text">Mengisi Password + Pilih File Excel</div>
+    <div class="node-sub"><code>file_gc</code> (.xlsx / .xls / .csv)</div>
+  </div>
+  <span class="arrow">↓</span>
+
+  <div class="node n-process">
+    <div class="node-label">HTTP POST</div>
+    <div class="node-text">Submit → <code>ImportGcController@store</code></div>
+    <div class="node-sub">Route: <code>POST /import/gc</code></div>
+  </div>
+  <span class="arrow">↓</span>
+
+  <div class="group">
+    <div class="group-title">🔐 Validasi Laravel</div>
+    <div class="node n-decision">
+      <div class="node-text">Password = <code>gcpln2026</code> ?</div>
+      <div class="node-sub">+ File wajib ada, mime: xlsx/xls/csv</div>
+    </div>
+    <span class="arrow">↓</span>
+    <span class="arrow-label">✅ Valid</span>
+
+    <div class="node n-process">
+      <div class="node-text"><code>Excel::import(new GcImport, $file)</code></div>
+      <div class="node-sub">Maatwebsite Excel – ToCollection + WithHeadingRow</div>
+      <div class="badge badge-purple">GcImport::collection()</div>
+    </div>
+  </div>
+  <span class="arrow">↓</span>
+
+  <div class="group">
+    <div class="group-title">📋 GcImport::collection() — Validasi Header</div>
+    <div class="node n-decision">
+      <div class="node-text">File kosong?</div>
+    </div>
+    <span class="arrow">↓</span>
+    <span class="arrow-label">❌ Ya</span>
+    <div class="node n-error" style="max-width:340px">
+      <div class="node-text">throw Exception: <em>"File Excel terlihat kosong"</em></div>
+    </div>
+    <span class="arrow" style="color:#ef4444">↑ catch → redirect()->back()->withErrors()</span>
+  </div>
+
+  <span class="arrow">↓</span>
+  <span class="arrow-label">✅ File tidak kosong</span>
+
+  <div class="node n-decision">
+    <div class="node-text">Pascabayar: <code>rbm, open, submitted, rejected</code><br>Prabayar: <code>email_biller, submitted, rejected</code></div>
+  </div>
+  <span class="arrow">↓</span>
+  <span class="arrow-label">✅ Header valid</span>
+
+  <div class="group">
+    <div class="group-title">🔄 DB Transaction</div>
+    <div class="node n-db">
+      <div class="node-label">DELETE</div>
+      <div class="node-text"><code>HasilGc::query()->delete()</code></div>
+      <div class="node-sub">Hapus semua data lama terlebih dahulu</div>
+      <div class="badge badge-yellow">Tabel: hasil_gcs</div>
+    </div>
+    <span class="arrow">↓</span>
+    <div class="node n-process">
+      <div class="node-text">Loop setiap baris Excel</div>
+    </div>
+    <span class="arrow">↓</span>
+    <div class="node n-decision">
+      <div class="node-text">Baris punya kolom <code>rbm</code>?</div>
+    </div>
+    <span class="arrow">↓</span>
+    <span class="arrow-label">✅ Ada</span>
+    <div class="node n-db">
+      <div class="node-label">SELECT</div>
+      <div class="node-text"><code>Rbm::where('kode_rbm', $row['rbm'])->first()</code></div>
+    </div>
+    <span class="arrow">↓</span>
+    <div class="node n-decision">
+      <div class="node-text">RBM ditemukan di database?</div>
+    </div>
+    <span class="arrow">↓</span>
+    <span class="arrow-label">✅ Ya</span>
+    <div class="node n-db">
+      <div class="node-label">INSERT</div>
+      <div class="node-text"><code>HasilGc::create([rbm_id, open, submitted, rejected])</code></div>
+      <div class="node-sub">Untuk prabayar, <code>rbm_id</code> dicari dari Email Biller → Petugas → RBM pertama; <code>open</code> selalu 0</div>
+      <div class="badge badge-green">Tabel: hasil_gcs</div>
+    </div>
+    <span class="arrow">↓</span>
+    <div class="node n-process">
+      <div class="node-text">Lanjut baris berikutnya…</div>
+    </div>
+  </div>
+  <span class="arrow">↓</span>
+  <span class="arrow-label">Transaksi commit</span>
+
+  <div class="node n-success">
+    <div class="node-text">redirect()->back()->with('success', 'Data Hasil GC berhasil diimport')</div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="node n-end">
+    <div class="node-label">Selesai</div>
+    <div class="node-text">✅ Flash message ditampilkan ke User</div>
+  </div>
+</div>
+
+<!-- ===================== TAB 2: PETUGAS ===================== -->
+<div id="tab-petugas" class="flow-wrap">
+  <div class="node n-start">
+    <div class="node-label">Mulai</div>
+    <div class="node-text">👤 User membuka halaman Import Petugas</div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="node n-process">
+    <div class="node-label">HTTP POST</div>
+    <div class="node-text"><code>ImportPetugasController@store</code></div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="node n-decision">
+    <div class="node-text">Validasi: Password + file_petugas (xlsx/xls/csv)?</div>
+  </div>
+  <span class="arrow">↓</span>
+  <span class="arrow-label">✅ Valid</span>
+  <div class="node n-process">
+    <div class="node-text"><code>Excel::import(new PetugasImport, $file)</code></div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="group">
+    <div class="group-title">🔄 PetugasImport — DB Transaction</div>
+    <div class="node n-process">
+      <div class="node-text">Loop setiap baris Excel</div>
+    </div>
+    <span class="arrow">↓</span>
+    <div class="node n-decision">
+      <div class="node-text">Kolom <code>rbm</code> & <code>nama_petugas</code> tidak kosong?</div>
+    </div>
+    <span class="arrow">↓</span>
+    <span class="arrow-label">✅ Ada</span>
+    <div class="node n-db">
+      <div class="node-label">firstOrCreate</div>
+      <div class="node-text"><code>Petugas::firstOrCreate(['email' => $email], ['nama' => ...])</code></div>
+      <div class="node-sub">Email dinormalisasi: lowercase + trim</div>
+      <div class="badge badge-blue">Tabel: petugas</div>
+    </div>
+    <span class="arrow">↓</span>
+    <div class="node n-db">
+      <div class="node-label">firstOrCreate</div>
+      <div class="node-text"><code>Rbm::firstOrCreate(['kode_rbm' => $rbm], ['petugas_id' => ...])</code></div>
+      <div class="badge badge-blue">Tabel: rbms</div>
+    </div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="node n-success">
+    <div class="node-text">redirect()->back()->with('success', 'Data Petugas berhasil diimport')</div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="node n-end">
+    <div class="node-label">Selesai</div>
+    <div class="node-text">✅ Data Petugas & RBM tersimpan</div>
+  </div>
+</div>
+
+<!-- ===================== TAB 3: KETERANGAN ===================== -->
+<div id="tab-keterangan" class="flow-wrap">
+  <div class="node n-start">
+    <div class="node-label">Mulai</div>
+    <div class="node-text">👤 User membuka halaman Import Keterangan</div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="node n-process">
+    <div class="node-label">HTTP POST</div>
+    <div class="node-text"><code>ImportKeteranganController@store</code></div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="node n-decision">
+    <div class="node-text">Validasi: Password + file (xlsx/xls/csv)?</div>
+  </div>
+  <span class="arrow">↓</span>
+  <span class="arrow-label">✅ Valid</span>
+  <div class="node n-process">
+    <div class="node-text"><code>Excel::import(new KeteranganImport, $file)</code></div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="group">
+    <div class="group-title">📋 KeteranganImport — Validasi Header</div>
+    <div class="node n-decision">
+      <div class="node-text">Kolom wajib ada? (<code>unitupi, unitap, unitup, email_biller,</code><br>1_berhasil_didata, 2_tidak_ada_responden, 3_responden_menolak, 4_meteran_tidak_ditemukan)</div>
+    </div>
+    <span class="arrow">↓</span>
+    <span class="arrow-label">✅ Valid</span>
+    <div class="node n-db">
+      <div class="node-label">DELETE</div>
+      <div class="node-text"><code>Keterangan::query()->delete()</code></div>
+      <div class="badge badge-yellow">Tabel: keterangans</div>
+    </div>
+    <span class="arrow">↓</span>
+    <div class="node n-process">
+      <div class="node-text">Loop baris — normalisasi string (trim, lowercase email, hapus [] dari kode unit)</div>
+    </div>
+    <span class="arrow">↓</span>
+    <div class="node n-db">
+      <div class="node-label">INSERT</div>
+      <div class="node-text"><code>Keterangan::create([unitupi, unitap, unitup, email_biller, berhasil_didata, ...])</code></div>
+      <div class="badge badge-green">Tabel: keterangans</div>
+    </div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="node n-success">
+    <div class="node-text">redirect()->back()->with('success', 'Data Keterangan berhasil diimport')</div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="node n-end">
+    <div class="node-label">Selesai</div>
+    <div class="node-text">✅ Data Keterangan tersimpan di DB</div>
+  </div>
+</div>
+
+<!-- ===================== TAB 4: DASHBOARD ===================== -->
+<div id="tab-dashboard" class="flow-wrap">
+  <div class="node n-start">
+    <div class="node-label">Mulai</div>
+    <div class="node-text">👤 User membuka halaman Dashboard</div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="node n-process">
+    <div class="node-label">HTTP GET</div>
+    <div class="node-text"><code>DashboardController@index</code></div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="group">
+    <div class="group-title">🗄️ Query Database</div>
+    <div class="node n-db">
+      <div class="node-label">Eager Load</div>
+      <div class="node-text"><code>Petugas::with(['rbms.hasilGc'])->get()</code></div>
+      <div class="node-sub">Join: petugas → rbms → hasil_gcs</div>
+    </div>
+    <span class="arrow">↓</span>
+    <div class="node n-process">
+      <div class="node-label">Map / Agregasi per Petugas</div>
+      <div class="node-text">Pascabayar hitung <code>open, submitted, rejected</code>; prabayar hanya <code>submitted, rejected</code></div>
+      <div class="node-sub">persentase = (submitted / total) × 100</div>
+    </div>
+    <span class="arrow">↓</span>
+    <div class="node n-db">
+      <div class="node-label">JOIN Keterangan</div>
+      <div class="node-text"><code>Keterangan::whereRaw('LOWER(email_biller) = ?', [email])->first()</code></div>
+      <div class="node-sub">Case-insensitive email matching</div>
+    </div>
+    <span class="arrow">↓</span>
+    <div class="node n-process">
+      <div class="node-text">Merge: berhasil_didata, tidak_ada_responden, responden_menolak, meteran_tidak_ditemukan ke objek petugas</div>
+    </div>
+    <span class="arrow">↓</span>
+    <div class="node n-process">
+      <div class="node-text">Sort by nama → Hitung Grand Total & totalPersentase</div>
+    </div>
+    <span class="arrow">↓</span>
+    <div class="node n-db">
+      <div class="node-label">Last Update</div>
+      <div class="node-text"><code>HasilGc::latest('updated_at')->first()?->updated_at</code></div>
+    </div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="node n-process">
+    <div class="node-text">return view('dashboard', compact(petugases, totalOpen, totalSubmitted, totalRejected, totalPersentase, lastUpdate, totalBerhasilDidata, …))</div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="group">
+    <div class="group-title">🖥️ View: dashboard.blade.php</div>
+    <div class="cols">
+      <div class="node n-success" style="max-width:none">
+        <div class="node-label">Summary Cards</div>
+        <div class="node-text">Pascabayar: Total Open / Submitted / Rejected / Persentase<br>Prabayar: Submitted / Rejected / Persentase</div>
+      </div>
+      <div class="node n-success" style="max-width:none">
+        <div class="node-label">Tabel Petugas</div>
+        <div class="node-text">Nama, RBM, GC, Keterangan per baris</div>
+      </div>
+    </div>
+  </div>
+  <span class="arrow">↓</span>
+  <div class="node n-end">
+    <div class="node-label">Selesai</div>
+    <div class="node-text">✅ Data tampil lengkap di Dashboard</div>
+  </div>
+</div>
+
+<script>
+function show(tab){
+  document.querySelectorAll('.flow-wrap').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -75,6 +75,93 @@
             font-size: 14px;
             font-weight: 500;
         }
+        .service-switcher {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            width: 100%;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .service-tab {
+            position: relative;
+            isolation: isolate;
+            min-height: 48px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 13px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            color: #52627a;
+            font-weight: 700;
+            letter-spacing: -.01em;
+            transition: transform .18s ease, box-shadow .18s ease, color .18s ease, background-color .18s ease;
+        }
+
+        .service-tab:hover {
+            transform: translateY(-1px);
+            background: #f8fafc;
+            box-shadow: 0 6px 14px rgba(15, 23, 42, .05);
+            color: #0f172a;
+        }
+
+        .service-tab.is-active {
+            border-color: transparent;
+            color: #fff;
+            background: linear-gradient(135deg, var(--tab-from), var(--tab-to));
+            box-shadow: 0 8px 18px var(--tab-shadow);
+        }
+
+        .service-tab-icon {
+            display: flex;
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            color: var(--tab-from);
+            background: var(--tab-soft);
+            transition: transform .18s ease, background-color .18s ease, color .18s ease;
+        }
+
+        .service-tab:hover .service-tab-icon {
+            transform: scale(1.04);
+        }
+
+        .service-tab.is-active .service-tab-icon {
+            color: #fff;
+            background: rgba(255, 255, 255, .18);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22);
+        }
+
+        @media (max-width: 640px) {
+            .service-switcher {
+                gap: 8px;
+            }
+
+            .service-tab {
+                min-height: 44px;
+                gap: 8px;
+                padding: 9px 8px;
+                border-radius: 12px;
+                font-size: 13px;
+            }
+
+            .service-tab-icon {
+                width: 30px;
+                height: 30px;
+                border-radius: 9px;
+            }
+        }
     </style>
 </head>
 
@@ -115,10 +202,52 @@
         <!-- Content -->
         <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
 
+            <!-- Layanan Switcher -->
+            <div class="mb-8">
+                <div class="service-switcher">
+                    @foreach ($layananOptions as $key => $label)
+                        @php
+                            $isActive = $activeLayanan === $key;
+                            $isPrabayar = $key === 'prabayar';
+                            $tabStyle = $isPrabayar
+                                ? '--tab-from:#059669;--tab-to:#0d9488;--tab-soft:#ecfdf5;--tab-shadow:rgba(5,150,105,.24);'
+                                : '--tab-from:#2563eb;--tab-to:#0284c7;--tab-soft:#eff6ff;--tab-shadow:rgba(37,99,235,.22);';
+                        @endphp
+                        <a href="{{ route('dashboard', ['layanan' => $key]) }}"
+                            style="{{ $tabStyle }}"
+                            class="service-tab {{ $isActive ? 'is-active' : '' }}">
+                            <span class="service-tab-icon">
+                                @if ($isPrabayar)
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                @else
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 3h10a2 2 0 012 2v16l-3-1.5-2 1.5-2-1.5-2 1.5-2-1.5L5 21V5a2 2 0 012-2z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 8h6M9 12h6M9 16h3" />
+                                    </svg>
+                                @endif
+                            </span>
+                            <span class="min-w-0 text-sm font-bold leading-5">
+                                PLN {{ $label }}
+                            </span>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
             <!-- Header & Actions -->
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
                 <div class="space-y-1">
-                    <h1 class="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight">Rekap GC DTSEN</h1>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <h1 class="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight">Rekap GC DTSEN</h1>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border {{ $activeTheme['badge'] }}">
+                            {{ $activeLayananLabel }}
+                        </span>
+                    </div>
                     <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
                         @if ($lastUpdate)
                             <span class="hidden sm:inline-block w-1 h-1 rounded-full bg-slate-300"></span>
@@ -153,11 +282,11 @@
                         <div x-show="dropdownOpen" x-transition.opacity.duration.200
                             @mouseenter="clearTimeout(dropdownTimeout); dropdownOpen = true"
                             @mouseleave="dropdownTimeout = setTimeout(() => dropdownOpen = false, 200)"
-                            class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-slate-200 py-1 z-30"
+                            class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg border border-slate-200 p-1.5 z-30"
                             style="display: none;">
                             <button @click="showImportPetugas = true; dropdownOpen = false"
-                                class="w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors">
-                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor"
+                                class="w-full px-3 py-2.5 text-sm font-medium text-slate-700 rounded-lg hover:bg-slate-50 flex items-center gap-3 text-left transition-colors">
+                                <svg class="w-4 h-4 shrink-0 text-slate-400" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4" />
@@ -165,27 +294,27 @@
                                 <span>Import Petugas</span>
                             </button>
                             <button @click="showImportGc = true; dropdownOpen = false"
-                                class="w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors">
-                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor"
+                                class="w-full px-3 py-2.5 text-sm font-medium text-slate-700 rounded-lg hover:bg-slate-50 flex items-center gap-3 text-left transition-colors">
+                                <svg class="w-4 h-4 shrink-0 text-slate-400" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                 </svg>
-                                <span>Import Data GC</span>
+                                <span>Import GC {{ $activeLayananLabel }}</span>
                             </button>
                             <button @click="showImportKeterangan = true; dropdownOpen = false"
-                                class="w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors">
-                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor"
+                                class="w-full px-3 py-2.5 text-sm font-medium text-slate-700 rounded-lg hover:bg-slate-50 flex items-center gap-3 text-left transition-colors">
+                                <svg class="w-4 h-4 shrink-0 text-slate-400" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <span>Import Keterangan</span>
+                                <span class="whitespace-nowrap">Import Keterangan {{ $activeLayananLabel }}</span>
                             </button>
                         </div>
                     </div>
 
-                    <a href="{{ route('export.rekap') }}"
+                    <a href="{{ route('export.rekap', ['layanan' => $activeLayanan]) }}"
                         class="group px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-green-600 border border-transparent text-white rounded-xl shadow-md shadow-green-200 text-sm font-medium hover:from-emerald-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 flex items-center gap-2">
                         <svg class="w-4 h-4 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -243,7 +372,8 @@
             @endif
 
             <!-- Summary Cards GC -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 {{ $activeLayanan === 'prabayar' ? 'lg:grid-cols-3' : 'lg:grid-cols-4' }} gap-5 mb-8">
+                @if ($activeLayanan !== 'prabayar')
                 <!-- Total Open -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 hover-lift group">
                     <div class="flex items-start justify-between">
@@ -265,6 +395,7 @@
                         Belum diproses
                     </p>
                 </div>
+                @endif
 
                 <!-- Total Submitted -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 hover-lift group">
@@ -518,9 +649,11 @@
                         data-sort-default>
                         <span class="flex items-center gap-1">Nama Petugas</span>
                     </th>
-                    <th scope="col"
-                        class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                        Open</th>
+                    @if ($activeLayanan !== 'prabayar')
+                        <th scope="col"
+                            class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                            Open</th>
+                    @endif
                     <th scope="col"
                         class="sort-header px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                         Submitted</th>
@@ -557,8 +690,10 @@
                                 <span class="text-sm font-medium text-slate-800">{{ $petugas->nama }}</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">
-                            {{ number_format($petugas->total_open) }}</td>
+                        @if ($activeLayanan !== 'prabayar')
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">
+                                {{ number_format($petugas->total_open) }}</td>
+                        @endif
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-semibold">
                             {{ number_format($petugas->total_submitted) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-rose-500 font-medium">
@@ -715,8 +850,8 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-semibold text-slate-800">Import Hasil GC</h3>
-                                    <p class="text-xs text-slate-500">Upload file Excel hasil GC</p>
+                                    <h3 class="text-lg font-semibold text-slate-800">Import Hasil GC {{ $activeLayananLabel }}</h3>
+                                    <p class="text-xs text-slate-500">Upload file Excel hasil GC untuk tab aktif</p>
                                 </div>
                             </div>
 
@@ -728,10 +863,11 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                         </svg>
-                                        <span><strong class="font-semibold">Peringatan:</strong> Data GC yang sudah ada
-                                            akan dihapus dan diganti dengan data baru dari file ini.</span>
+                                        <span><strong class="font-semibold">Peringatan:</strong> Data GC {{ $activeLayananLabel }}
+                                            yang sudah ada akan dihapus dan diganti dengan data baru dari file ini.</span>
                                     </p>
                                 </div>
+                                <input type="hidden" name="jenis_layanan" value="{{ $activeLayanan }}">
 
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-600 mb-1.5">PASSWORD
@@ -754,7 +890,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
-                                        Kolom: RBM, OPEN, SUBMITTED, REJECTED
+                                        Kolom: {{ $activeLayanan === 'prabayar' ? 'EMAIL BILLER, SUBMITTED, REJECTED' : 'RBM, OPEN, SUBMITTED, REJECTED' }}
                                     </p>
                                 </div>
                             </div>
@@ -801,8 +937,8 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-semibold text-slate-800">Import Data Keterangan</h3>
-                                    <p class="text-xs text-slate-500">Upload file Excel keterangan survey</p>
+                                    <h3 class="text-lg font-semibold text-slate-800">Import Keterangan {{ $activeLayananLabel }}</h3>
+                                    <p class="text-xs text-slate-500">Upload file Excel keterangan survey untuk tab aktif</p>
                                 </div>
                             </div>
 
@@ -814,10 +950,11 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
-                                        <span><strong class="font-semibold">Informasi:</strong> Data keterangan yang
-                                            sudah ada akan dihapus dan diganti dengan data baru dari file ini.</span>
+                                        <span><strong class="font-semibold">Informasi:</strong> Data keterangan {{ $activeLayananLabel }}
+                                            yang sudah ada akan dihapus dan diganti dengan data baru dari file ini.</span>
                                     </p>
                                 </div>
+                                <input type="hidden" name="jenis_layanan" value="{{ $activeLayanan }}">
 
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-600 mb-1.5">PASSWORD
@@ -906,9 +1043,11 @@
             }
 
             // Charts configuration
-            const totalOpen = {{ $totalOpen }};
             const totalSubmitted = {{ $totalSubmitted }};
             const totalRejected = {{ $totalRejected }};
+            const statusLabels = @json($statusChartLabels);
+            const statusValues = @json($statusChartValues);
+            const statusColors = @json($statusChartColors);
 
             // Keterangan data
             const totalBerhasil = {{ $totalBerhasilDidata }};
@@ -925,13 +1064,11 @@
                 type: 'doughnut',
                 data: {
                     labels: [
-                        `Open: ${totalOpen.toLocaleString()}`,
-                        `Submitted: ${totalSubmitted.toLocaleString()}`,
-                        `Rejected: ${totalRejected.toLocaleString()}`
+                        ...statusLabels.map((label, index) => `${label}: ${Number(statusValues[index]).toLocaleString()}`)
                     ],
                     datasets: [{
-                        data: [totalOpen, totalSubmitted, totalRejected],
-                        backgroundColor: ['#94a3b8', '#3b82f6', '#f43f5e'],
+                        data: statusValues,
+                        backgroundColor: statusColors,
                         borderWidth: 0,
                         borderRadius: 6,
                         spacing: 2

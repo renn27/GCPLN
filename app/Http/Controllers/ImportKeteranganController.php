@@ -12,6 +12,7 @@ class ImportKeteranganController extends Controller
     {
         $request->validate([
             'password' => 'required',
+            'jenis_layanan' => 'required|in:pascabayar,prabayar',
             'file_keterangan' => 'required|mimes:xlsx,xls,csv'
         ]);
 
@@ -20,10 +21,15 @@ class ImportKeteranganController extends Controller
         }
 
         try {
-            Excel::import(new KeteranganImport, $request->file('file_keterangan'));
-            return redirect()->back()->with('success', 'Data Keterangan berhasil diimport.');
+            Excel::import(new KeteranganImport($request->jenis_layanan), $request->file('file_keterangan'));
+            return redirect()->back()->with('success', 'Data Keterangan ' . $this->labelLayanan($request->jenis_layanan) . ' berhasil diimport.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['file_keterangan' => 'Gagal import: ' . $e->getMessage()]);
         }
+    }
+
+    private function labelLayanan(string $jenisLayanan): string
+    {
+        return $jenisLayanan === 'prabayar' ? 'Prabayar' : 'Pascabayar';
     }
 }
